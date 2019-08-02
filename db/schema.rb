@@ -12,30 +12,34 @@
 
 ActiveRecord::Schema.define(version: 6) do
 
+  create_table "host_labels", force: :cascade do |t|
+    t.integer "host_id"
+    t.integer "label_id"
+    t.datetime "host_label_date"
+    t.index ["host_id"], name: "index_host_labels_on_host_id"
+    t.index ["label_id"], name: "index_host_labels_on_label_id"
+  end
+
   create_table "hosts", force: :cascade do |t|
     t.string "name"
+  end
+
+  create_table "label_users", force: :cascade do |t|
+    t.integer "label_id"
+    t.integer "user_id"
+    t.datetime "label_user_date"
+    t.index ["label_id"], name: "index_label_users_on_label_id"
+    t.index ["user_id"], name: "index_label_users_on_user_id"
   end
 
   create_table "labels", force: :cascade do |t|
     t.string "name"
   end
 
-  create_table "labels_hosts", id: false, force: :cascade do |t|
-    t.integer "label_id"
-    t.integer "host_id"
-    t.index ["host_id"], name: "index_labels_hosts_on_host_id"
-    t.index ["label_id"], name: "index_labels_hosts_on_label_id"
-  end
-
-  create_table "labels_users", id: false, force: :cascade do |t|
-    t.integer "label_id"
-    t.integer "user_id"
-    t.index ["label_id"], name: "index_labels_users_on_label_id"
-    t.index ["user_id"], name: "index_labels_users_on_user_id"
-  end
-
   create_table "locations", force: :cascade do |t|
     t.string "name"
+    t.integer "host_id"
+    t.index ["host_id"], name: "index_locations_on_host_id"
   end
 
   create_table "users", force: :cascade do |t|
