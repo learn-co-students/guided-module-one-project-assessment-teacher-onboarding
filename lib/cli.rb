@@ -7,12 +7,14 @@ class CommandLineInterface
 
   def greet
     puts "Welcome to Labels, an old way to meet new people!"
-    puts "To help us match you with a host, please select a few labels for yourself."
   end
 
   def set_user_name
     puts "What's your name?"
     user_name = gets.chomp
+    puts "Hey there, #{user_name}!"
+    puts "To help us match you with a host, please select a few labels for yourself."
+    user_name
   end
 
   def choose_animal_label   
@@ -152,7 +154,7 @@ class CommandLineInterface
         elsif match_labels.length == 2
           puts "#{match_labels[0]} and #{match_labels[1]}."
         else
-          puts match_labels[0...match_labels.length].join(", ") + ", and " + match_labels[-1] + "."
+          puts match_labels[0...-2].join(", ") + ", and " + match_labels[-1] + "."
         end
       end
       return host_matches.map{ |host| host[0]}
@@ -164,7 +166,7 @@ class CommandLineInterface
     puts "Which host are you interest in joining?"
     host_choice = ""
     until host_choice != ""
-      host_choice = gets.chomp.capitalize
+      host_choice = gets.chomp
       if !host_suggestions.include?(host_choice)
         host_choice = ""
         puts "Please choose one of the following hosts:"
@@ -179,7 +181,54 @@ class CommandLineInterface
   def host_confirmation(host_choice)
     # binding.pry
     neighborhood_array = ["downtown", "uptown", "on the east side", "on the west side", "on the south side", "on the north side", "lakeside", "in the Phishing District", "in Little Moscow"]
-    puts "You'll love spending time in the aura of #{host_choice.name}. They meet #{neighborhood_array[rand(0...neighborhood_array.length)]} at #{host_choice.location.name}."
+    day_array = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"]
+    time_array = ["at 9 AM", "around noon thirty", "from 2 to 4 PM", "starting at 6 in the evening", "from 9 at night until whenever"]
+    puts "You'll love spending time in the aura of #{host_choice.name}. They meet #{neighborhood_array[rand(0...neighborhood_array.length)]} at #{host_choice.location.name} on #{day_array[rand(0...day_array.length)]} #{time_array[rand(0...day_array.length)]}."
+  end
+
+  def guest_suggestion(current_user)
+    guest_matches = current_user.match_to_guest
+    puts "Based on your labels, might we suggest getting together with:"
+    if guest_matches.length == 0
+      guest_number = 0
+      current_user.host.users.each do |guest|
+        guest_labels = guest.labels.map { |label| label.name }
+        print "#{guest.name}, who revels in "
+        if guest_labels.length == 1
+          puts "#{guest_labels[0]}."
+        elsif guest_labels.length == 2
+          puts "#{guest_labels[0]} and #{guest_labels[1]}."
+        else
+          puts guest_labels[0..-2].join(", ") + ", and " + guest_labels[-1] + "."
+        end
+        guest_number += 1
+        break if guest_number == 3
+      end
+      return current_user.host.users.map { |guest| guest.name }
+    else
+      guest_matches.each do |match|
+        match_labels = match[1].map do |label|
+          label.name
+        end
+        print "#{match[0]}, who also shares your fondness for "
+        if match_labels.length == 1
+          puts "#{match_labels[0]}."
+        elsif match_labels.length == 2
+          puts "#{match_labels[0]} and #{match_labels[1]}."
+        else
+          puts match_labels[0...match_labels.length].join(", ") + ", and " + match_labels[-1] + "."
+        end
+      end
+      wildcard_guest = current_user.host.users[rand(0...current_user.host.users.length)]
+      wildcard_guest_name = wildcard_guest.name
+      wildcard_guest_topic = wildcard_guest.labels[rand(0...wildcard_guest.labels.length)].name
+      puts "And make a point to introduce yourself to #{wildcard_guest_name} and ask them about #{wildcard_guest_topic}!"
+      return guest_matches.map{ |guest| guest[0]}
+    end
+  end
+
+  def final_confirmation
+    puts "Come as you are and have a great time! Until next week!"
   end
 
 end

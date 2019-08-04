@@ -44,6 +44,8 @@ ActiveRecord::Schema.define(version: 6) do
 
   create_table "users", force: :cascade do |t|
     t.string "name"
+    t.integer "host_id"
+    t.index ["host_id"], name: "index_users_on_host_id"
   end
 
 end

@@ -1,4 +1,5 @@
 class User < ActiveRecord::Base
+    belongs_to :host
     has_many :label_users
     has_many :labels, through: :label_users
 
@@ -32,5 +33,26 @@ class User < ActiveRecord::Base
         hosts_by_like = @compatible_hosts.sort_by{ |host, labels| labels.size }
     end
 
+    def match_to_guest
+        @compatible_guests = {}
+        # binding.pry
+        self.host.users.each do |guest|
+            guest_name = guest.name
+            self.labels.each do |label|
+                if guest.labels.include?(label)
+                    if @compatible_guests[guest_name] == nil
+                        @compatible_guests[guest_name] = [label]
+                    else
+                        @compatible_guests[guest_name] << label
+                    end
+                end
+            end
+        end
+        most_match_to_guest
+    end
+
+    def most_match_to_guest
+        guests_by_like = @compatible_guests.sort_by{ |guest, labels| labels.size }
+    end
     
 end
