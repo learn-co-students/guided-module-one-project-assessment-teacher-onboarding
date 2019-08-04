@@ -123,9 +123,63 @@ class CommandLineInterface
 
   def creating_profile
     "Creating profile..."
-    
   end
 
+  def host_suggestion(current_user)
+    host_matches = current_user.match_to_host
+    puts "Based on your labels, might we suggest getting together with:"
+    if host_matches.length == 0
+      Host.all.each do |host|
+        host_labels = host.labels.map { |label| label.name }
+        print "#{host.name}, who revels in "
+        if host_labels.length == 1
+          puts "#{host_labels[0]}."
+        elsif host_labels.length == 2
+          puts "#{host_labels[0]} and #{host_labels[1]}."
+        else
+          puts host_labels[0...host_labels.length].join(", ") + ", and " + host_labels[-1] + "."
+        end
+      end
+      return Host.all.map { |host| host.name }
+    else
+      host_matches.each do |match|
+        match_labels = match[1].map do |label|
+          label.name
+        end
+        print "#{match[0]}, who also shares your fondness for "
+        if match_labels.length == 1
+          puts "#{match_labels[0]}."
+        elsif match_labels.length == 2
+          puts "#{match_labels[0]} and #{match_labels[1]}."
+        else
+          puts match_labels[0...match_labels.length].join(", ") + ", and " + match_labels[-1] + "."
+        end
+      end
+      return host_matches.map{ |host| host[0]}
+    end
+  end
 
+  def choose_host(host_suggestions)
+    # binding.pry
+    puts "Which host are you interest in joining?"
+    host_choice = ""
+    until host_choice != ""
+      host_choice = gets.chomp.capitalize
+      if !host_suggestions.include?(host_choice)
+        host_choice = ""
+        puts "Please choose one of the following hosts:"
+        host_suggestions.each{ |suggestion| print "| #{suggestion} |" }
+        puts ""
+      end
+    end
+    # binding.pry
+    host_choice = Host.find_by(name: host_choice)
+  end
+
+  def host_confirmation(host_choice)
+    # binding.pry
+    neighborhood_array = ["downtown", "uptown", "on the east side", "on the west side", "on the south side", "on the north side", "lakeside", "in the Phishing District", "in Little Moscow"]
+    puts "You'll love spending time in the aura of #{host_choice.name}. They meet #{neighborhood_array[rand(0...neighborhood_array.length)]} at #{host_choice.location.name}."
+  end
 
 end

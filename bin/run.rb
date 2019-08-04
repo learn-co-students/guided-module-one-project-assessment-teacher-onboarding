@@ -19,5 +19,8 @@ current_user.labels << user_food
 user_existing = cli.choose_existing_label
 current_user.labels << user_existing
 cli.creating_profile
+host_suggestions = cli.host_suggestion(current_user)
+host_choice = cli.choose_host(host_suggestions)
+cli.host_confirmation(host_choice)
 
 puts "Thank you!"
