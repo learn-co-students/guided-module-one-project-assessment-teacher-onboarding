@@ -16,4 +16,8 @@ user_color = cli.choose_color_label
 current_user.labels << user_color
 user_food = cli.choose_food_label
 current_user.labels << user_food
+user_existing = cli.choose_existing_label
+current_user.labels << user_existing
+cli.creating_profile
+
 puts "Thank you!"

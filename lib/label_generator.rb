@@ -1,16 +1,17 @@
 class LabelGenerator
-  attr_accessor :animals, :powers, :colors, :foods
+  attr_accessor :animals, :powers, :colors, :foods, :existing
   
   def initialize
     @animals = []
     @powers = []
     @colors = []
     @foods = []
+    @existing = []
     6.times { @animals << Faker::Creature::Animal.name.downcase }
     6.times { @powers << Faker::Superhero.power.downcase }
     6.times { @colors << Faker::Color.color_name.downcase }
     6.times { @foods << Faker::Food.dish.downcase }
-
+    6.times { @existing << Label.all[rand(0...Label.all.length)].name }
   end
 
   def populate_animals
@@ -39,6 +40,13 @@ class LabelGenerator
       @foods.clear
     end
     6.times { @foods << Faker::Food.dish.downcase }
+  end
+
+  def populate_existing
+    if @foods.length != 0
+      @foods.clear
+    end
+    6.times { @existing << Label.all[rand(0...Label.all.length)].name }
   end
 
   def print_labels(array)

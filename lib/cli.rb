@@ -33,7 +33,7 @@ class CommandLineInterface
 
     puts "#{user_animal.capitalize}! How majestic!"
     
-    user_animal_label = Label.create(name: user_animal)
+    user_animal_label = Label.find_or_create_by(name: user_animal)
   end
 
   def choose_power_label   
@@ -55,7 +55,7 @@ class CommandLineInterface
 
     puts "#{user_power.capitalize}! Zounds!"
 
-    user_power_label = Label.create(name: user_power)
+    user_power_label = Label.find_or_create_by(name: user_power)
   end
 
   def choose_color_label   
@@ -76,7 +76,7 @@ class CommandLineInterface
 
     puts "#{user_color.capitalize}. The perfect touch."
     
-    user_color_label = Label.create(name: user_color)
+    user_color_label = Label.find_or_create_by(name: user_color)
   end
 
   def choose_food_label   
@@ -97,8 +97,35 @@ class CommandLineInterface
 
     puts "#{user_food.capitalize}... a dish befitting the finest."
     
-    user_food_label = Label.create(name: user_food)
+    user_food_label = Label.find_or_create_by(name: user_food)
   end
+  
+  def choose_existing_label   
+    puts "Choose one of the following six labels in your area:"
+
+    existing_choices = @labgen.print_labels(@labgen.existing)
+
+    user_existing = ""
+    until user_existing != ""
+      user_existing = gets.chomp.downcase
+      if !existing_choices.include?(user_existing)
+        user_existing = ""
+        @labgen.populate_existings
+        puts "Please choose one of the following six existings:"
+        existing_choices = @labgen.print_labels(@labgen.existings)
+      end
+    end
+
+    puts "#{user_existing.capitalize}? So you're one of those!"
+
+    user_existing_label = Label.find_or_create_by(name: user_existing)
+  end
+
+  def creating_profile
+    "Creating profile..."
+    
+  end
+
 
 
 end
