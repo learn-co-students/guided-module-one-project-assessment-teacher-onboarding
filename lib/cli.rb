@@ -9,6 +9,77 @@ class CommandLineInterface
     puts "Welcome to Labels, an old way to meet new people!"
   end
 
+  def options
+    puts "Would you like to"
+    puts "1. Make an account"
+    puts "2. Check account status"
+    puts "3. Delete an account"
+    puts "4. Exit"
+    choice = gets.chomp
+    if choice[0] == "1" || choice[0].downcase == "m"
+      choice = 1
+    elsif choice[0] == "2" || choice[0].downcase == "c"
+      choice = 2
+      check_status
+    elsif choice[0] == "3" || choice[0].downcase == "d"
+      choice = 3
+      delete_account
+    elsif choice[0] == "4" || choice[0].downcase == "e"
+      choice = 4
+      puts "Bye for now!"
+    else
+      options
+    end
+    choice
+  end
+
+  def check_status
+    puts "What's your name?"
+    user_name = gets.chomp
+    user = User.find_by(name: user_name)
+    if user == nil
+      puts "Your name wasn't found."
+      options
+    else
+      puts "Welcome back #{user.name}!"
+      if user.host == nil
+        puts "You haven't chosen a host."
+        host_suggestions = host_suggestion(user)
+        host_choice = choose_host(host_suggestions)
+        user.host = host_choice
+        host_confirmation(host_choice)
+      
+        guest_suggestions = guest_suggestion(user)
+      
+        final_confirmation
+      else
+        puts "You're currently running with #{user.host} at the #{user.host.location}."
+        guest_suggestion(user)
+        puts "See you there!"
+      end
+    end
+  end
+
+  def delete_account
+    puts "What's your name?"
+    user_name = gets.chomp
+    user = User.find_by(name: user_name)
+    if user == nil
+      puts "Your name wasn't found. Your account may have already been deleted!"
+      options
+    else
+      puts "Are you sure you want to delete your account?"
+      deletion_confirmation = gets.chomp
+      if deletion_confirmation[0].downcase == "y"
+        user.delete
+        puts "We'll be here when you need us. Have fun in the world!"
+      else
+        puts "We're so glad to have your company!"
+        options
+      end
+    end
+  end
+
   def set_user_name
     puts "What's your name?"
     user_name = gets.chomp
@@ -139,7 +210,7 @@ class CommandLineInterface
         elsif host_labels.length == 2
           puts "#{host_labels[0]} and #{host_labels[1]}."
         else
-          puts host_labels[0...host_labels.length].join(", ") + ", and " + host_labels[-1] + "."
+          puts host_labels[0..-2].join(", ") + ", and " + host_labels[-1] + "."
         end
       end
       return Host.all.map { |host| host.name }
@@ -154,7 +225,7 @@ class CommandLineInterface
         elsif match_labels.length == 2
           puts "#{match_labels[0]} and #{match_labels[1]}."
         else
-          puts match_labels[0...-2].join(", ") + ", and " + match_labels[-1] + "."
+          puts match_labels[0..-2].join(", ") + ", and " + match_labels[-1] + "."
         end
       end
       return host_matches.map{ |host| host[0]}
@@ -183,7 +254,7 @@ class CommandLineInterface
     neighborhood_array = ["downtown", "uptown", "on the east side", "on the west side", "on the south side", "on the north side", "lakeside", "in the Phishing District", "in Little Moscow"]
     day_array = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"]
     time_array = ["at 9 AM", "around noon thirty", "from 2 to 4 PM", "starting at 6 in the evening", "from 9 at night until whenever"]
-    puts "You'll love spending time in the aura of #{host_choice.name}. They meet #{neighborhood_array[rand(0...neighborhood_array.length)]} at #{host_choice.location.name} on #{day_array[rand(0...day_array.length)]} #{time_array[rand(0...day_array.length)]}."
+    puts "You'll blossom in the aura of #{host_choice.name}! They meet #{neighborhood_array[rand(0...neighborhood_array.length)]} at #{host_choice.location.name} on #{day_array[rand(0...day_array.length)]} #{time_array[rand(0...day_array.length)]}."
   end
 
   def guest_suggestion(current_user)

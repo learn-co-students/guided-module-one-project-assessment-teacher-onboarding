@@ -9,7 +9,7 @@
 4.times{ 
   new_location = Location.create(name: Faker::Restaurant.name)
   new_host = Host.create(name: Faker::Artist.name, location: new_location) 
-  10.times{ new_host.labels << Label.all[rand(0...Label.all.length)]}
+  13.times{ new_host.labels << Label.all[rand(0...Label.all.length)]}
 }
 
 User.all.each do |user|
